@@ -74,6 +74,7 @@ body{
     font-family: var(--font-fam);
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     align-items: center;
     min-height: 100vh;
 

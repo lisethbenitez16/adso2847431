@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02-Javascript (API)</title>
+    <link rel="stylesheet" href="../css/master.css">
+    <style>
+        section.characters {
+            display: grid;
+            grid-template-columns: repeat(5, 220px);
+            margin: 3rem 0 3rem 0;
+            gap: 1rem; 
+            div.character{
+                border: 5px solid #fff;
+                border-radius: 8px;
+                position: relative;
+                overflow: hidden;
+                height: 220px;
+                width: 220px;
+                article,
+                img{
+                    position: absolute;
+                }
+                article{
+                    background-color: #000c;
+                    z-index: 1;
+                    bottom: -100px;
+                    padding: 0.4rem;
+                    transition: bottom 0.4s ease-in;
+                    width: 100%;
+                    h4,h5 {
+                        color: #fff;
+                    }
+                    .Alive {
+                        color: #adff2f;
+                    }
+                    .Dead {
+                        color: #dc143c;
+                    }
+                    button.btn-show {
+                        border: none;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        padding: 0.2rem 0.4rem;
+                        transition: transform 0.2s ease-in;
+                        font-size: 0.8rem;
+                        &:hover {
+                            transform: scale(1.1);
+                        }
+                    }
+                }
+                &:hover article {
+                    bottom: 0;
+                }
+                img{
+                    object-fit: cover;
+                }
+
+            }
+        }
+        @media screen and (max-width: 1190px) {
+            section.characters {
+                grid-template-columns: repeat(4, 220px);
+            }
+        }
+
+        @media screen and (max-width: 960px) {
+            section.characters {
+                grid-template-columns: repeat(3, 220px);
+            }
+        }
+
+        @media screen and (max-width: 720px) {
+            section.characters {
+                grid-template-columns: repeat(2, 220px);
+            }
+        }
+
+        .modal {
+    display: none;
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.3); 
+    align-items: center;
+    position: fixed;
+    z-index: 1000;
+    height: 60%;
+    width: 30%;
+    top: 100px;
+    border-radius: 10px;
+    justify-content: center
+}
+.modal-content {
+    width: 600px;
+    max-width: 100%;
+    padding: 30px 50px;
+    border-radius: 5px;
+    text-align: center;
+    justify-content: center;
+    }
+
+.info{
+    background-color: #d4e9ff; 
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    display: inline-block;
+    position: relative; 
+}              
+.close {
+    color: red;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+.close:hover,
+.close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+} 
+.info h4{
+    color: #ff9;
+    margin: 0;
+    font-size: 30px;
+}
+.info p {
+    color: #000;
+    font-size: 15px;
+}
+    .info img{
+        width: 80%;
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    
+                
+    </style>
+</head>
+<body class="level2">
+   <nav>
+      <a href="../index.html">
+         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+      </a>
+        </nav>
+   <main>
+     <header>
+        <h1>02-Javascript (API)</h1>
+        <h2>Fetching data from Rest API using JS</h2>
+    
+     </header>
+
+     <section class="characters"></section>
+
+     
+
+    <!--modal info-->
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="info"></div>
+        </div>
+     </div>
+
+    
+   </main>
+
+   <script>
+    //ELEMENTOS
+    const characters = document.querySelector('.characters');
+    const modal = document.querySelector('.modal');
+    const modalContent = document.querySelector('.modal .info');
+    const span = document.querySelector('.close');
+       
+    //OBTENER TODOS LOS PERSONAJES
+    const fetchCaracters = async () => {
+        for (let i = 1; i <= 30; i++) {
+            const url = 'https://rickandmortyapi.com/api/character/' + i;
+            await fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    characters.innerHTML += '<div class="character">\
+                                                <article>\
+                                                    <h4>' + data.name.substring(0, 16) + '</h4>\
+                                                    <h5 class="' + data.status + '">' + data.status + '</h5>\
+                                                    <button class="btn-show" data-id="' + data.id + '">+ Info</button>\
+                                                </article>\
+                                                <img src="' + data.image + '">\
+                                            </div>';
+                });
+        }
+        addClickEvents();
+    };
+
+    const fetchInformation = async (id) => {
+        const url = 'https://rickandmortyapi.com/api/character/' + id;
+        await fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+                modalContent.innerHTML = '<div class="info">\
+                                            <h4>' + data.name.substring(0, 16) + '</h4>\
+                                            <p>Species: ' + data.species + '</p>\
+                                            <p>Gender: ' + data.gender + '</p>\
+                                            <p>Status: ' + data.status+ '</p>\
+                                            <p>Origin: ' + data.origin.name + '</p>\
+                                            <img src="' + data.image + '">\
+                                        </div>';
+                modal.style.display = "block";
+            });
+    };
+
+    function addClickEvents() {
+        const btnsShow = document.querySelectorAll('.btn-show');
+
+        btnsShow.forEach(element => {
+            element.addEventListener('click', function() {
+                fetchInformation(this.getAttribute('data-id'));
+            });
+        });
+    }
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    };
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    fetchCaracters();
+   </script>
+
+</body>
+</html>
