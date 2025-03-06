@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->bigInteger('document')->unique;
+            $table->string('fullname');
+            $table->string('gender');
+            $table->date('birthdate');
+            $table->string('photo')->default('no-photo.png');
+            $table->string('phone');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('role')->default('customer');
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestamps(); /*cuando fue creado- modificado*/ 
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -38,8 +44,8 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
-     */
+     * Reverse the migrations.  /*lo que se haga en up, se deestruye en down*/ 
+     
     public function down(): void
     {
         Schema::dropIfExists('users');
