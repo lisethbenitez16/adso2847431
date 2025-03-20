@@ -19,9 +19,15 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'document',
+        'fullname',
+        'gender',
+        'birthdate',
+        'photo',
+        'phone',
         'email',
         'password',
+        'role' /*es opcional la coma */ 
     ];
 
     /**
@@ -56,5 +62,12 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    //relacion adoptar muchas mascotas
+
+    public function adoptions() {
+        return $this->hasMany(Adoption::class);
+       
     }
 }
