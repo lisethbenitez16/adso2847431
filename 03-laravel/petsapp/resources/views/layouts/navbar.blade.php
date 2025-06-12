@@ -39,10 +39,10 @@
             <ul class="flex items-center gap-2">
                 <li>
                     <div class="avatar">
-                        <div class="w-10 rounded-full">
+                        <div class="mask mask-squircle w-14">
                             <img src="{{ asset('images/' . Auth::user()->photo) }}" />
                         </div>
-                    </div>
+                </div>
                 </li>
 
                 <li>
