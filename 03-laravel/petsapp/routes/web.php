@@ -3,22 +3,46 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
+//use App\Http\Controllers\PetController;
+//use App\Http\Controllers\AdoptionController;
+
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Route::view('dashboard', 'dashboard')
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
+
+Route::get('dashboard', function (Request $request) {
+
+    if (Auth::user()->role == 'Admin'){
+        return view('dashboard-admin');
+
+    }else if(Auth::user()->role == 'Customer'){
+        return view('dashboard-customer');
+
+    } else{
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->back()->with('error', 'Role no exist');
+    }
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
-    Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
-    Volt::route('settings/password', 'settings.password')->name('settings.password');
-    Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    Route::resources([
+        'users' => UserController::class,
+        // 'pets' => PetController::class,
+        // 'adoptions' => AdoptionController::class,
+    ]);
 });
 require __DIR__.'/auth.php';
 
