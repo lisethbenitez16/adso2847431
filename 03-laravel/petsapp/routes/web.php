@@ -1,53 +1,45 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UserController;
-//use App\Http\Controllers\PetController;
+use App\Http\Controllers\PetController;
 //use App\Http\Controllers\AdoptionController;
-
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-
-// Route::view('dashboard', 'dashboard')
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
-
-Route::get('dashboard', function (Request $request) {
-
-    if (Auth::user()->role == 'Admin'){
-        return view('dashboard-admin');
-
-    }else if(Auth::user()->role == 'Customer'){
+Route::get('/dashboard', function (Request $request) {
+    if(Auth::user()->role =='Admin'){
+return view('dashboard-admin');
+    }
+    else if(Auth::user()->role =='Customer'){
         return view('dashboard-customer');
-
-    } else{
+    }else{
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->back()->with('error', 'Role no exist');
     }
+
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
-    Route::resources([
+Route::resources([
         'users' => UserController::class,
-        // 'pets' => PetController::class,
-        // 'adoptions' => AdoptionController::class,
-    ]);
+     'pets' => PetController::class,
+]);
+    Route::post('users/search',[UserController::class, 'search']);
+    Route::post('pets/search',[PetController::class, 'search']);
 });
+
 require __DIR__.'/auth.php';
-
-//list all users (factory challenge)
-
 
 Route::get('show/users', function () {
     $users = \App\Models\User::all();
@@ -64,7 +56,7 @@ Route::get('show/pets', function () {
     $pets = \App\Models\Pet::all();
    // var_dump($pets->toArray());
    dd($pets->toArray()); //dd->dump and die
-    
+
 });
 
 Route::get('challenge/users', function () {
@@ -76,10 +68,10 @@ Route::get('challenge/users', function () {
                         <th style='background: gray; color: white; padding: 0.4rem'>Fullname</th>
                         <th style='background: gray; color: white; padding: 0.4rem'>Age</th>
                         <th style='background: gray; color: white; padding: 0.4rem'>Created At</th>
-                        
+
                     </tr>";
 
-                   
+
                     foreach ($users as $user){
                         $code .= ($user->id%2 == 0) ? "<tr style='background: #ddd'>" : "<tr>";
                         $code .= "<td style='border: 1px solid #ddd; padding: 0.4rem'>".$user->id."</td>";
@@ -90,24 +82,24 @@ Route::get('challenge/users', function () {
                         }
                         return $code. "</table>";
                     });
-                        
+
              Route::get('view/blade', function () {
                 $title = "Examples Blade";
                 $pets = App\Models\Pet::whereIn('kind', ['dog', 'cat'])->get();
-                                    
+
                 return view('example-view')
                 ->with('title', $title)
                 ->with('pets', $pets);
-             });    
-             
-             Route::get('show/pet/{id}', function () {
-                $pet = \App\Models\Pet::find(request()->id);
-                return view('show-pet')->with('pet', $pet);
              });
 
-             
+             Route::get('/view/info/{id}', function () {
+                $title = "Info Pet";
+
+                $pet = \App\Models\Pet::find(request()->id);
+                return view('pets-info')
+                ->with('title', $title)
+                ->with('pet', $pet);
+             });
 
 
-    
-                
 

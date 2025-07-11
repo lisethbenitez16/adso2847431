@@ -27,7 +27,7 @@ class User extends Authenticatable
         'phone',
         'email',
         'password',
-        'role' /*es opcional la coma */ 
+        'role' /*es opcional la coma */
     ];
 
     /**
@@ -68,6 +68,12 @@ class User extends Authenticatable
 
     public function adoptions() {
         return $this->hasMany(Adoption::class);
-       
+
+    }
+    public function scopeNames($users, $q){
+    if(trim($q)){
+        $users->where('fullname', 'LIKE',"%$q%")
+              ->orwhere('email', 'LIKE',"%$q%");
+        }
     }
 }

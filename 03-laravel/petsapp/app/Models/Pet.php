@@ -17,7 +17,7 @@ class Pet extends Model
         'breed',
         'location',
         'description',
-        
+
     ];
 
     //relacion mascota tiene una adopcion
@@ -25,7 +25,11 @@ class Pet extends Model
     public function adoption() {
         return $this->hasOne(Adoption::class);
 }
-
+    public function scopeNames($pets, $q){
+    if(trim($q)){
+        $pets->where('name', 'LIKE',"%$q%");
+        }
+    }
 }
-   
+
 

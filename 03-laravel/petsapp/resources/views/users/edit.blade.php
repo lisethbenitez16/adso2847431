@@ -1,25 +1,27 @@
 @extends('layouts.app')
-@section('title', 'Create User')
+@section('title', 'Edit User')
 
 @section('content')
 @include('layouts.navbar')
 <!-- Authentication -->
 
 <h1 class="text 3xl pt-30 flex gap-2 items-center text-white font-bold mb-10 pb-2 border-b-2">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-    </svg>
-    Create User
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+</svg>
+    Edit User
 </h1>
 <div class="breadcrumbs text-sm text-white">
   <ul>
     <li><a href="{{url('users')}}">User Module</a></li>
-    <li>Create User</li>
+    <li>Edit User</li>
   </ul>
 </div>
 
-<form method="post" action="{{ route('users.store') }}" class="pt-6 pb-20" enctype="multipart/form-data"> <!-- Importante para subir imagenes el enctype -->
+<form method="POST" action="{{ url('users/'.$user->id) }}" class="pt-6 pb-20" enctype="multipart/form-data"> <!-- Importante para subir imagenes el enctype -->
         @csrf
+        @method('PUT')
+        <input type="hidden" name="id" value="{{$user->id}}">
         <fieldset class="fieldset w-md bg-base-200 border border-base-300 p-4 rounded-box">
                 @if (count($errors->all()) > 0)
                     <div class="flex flex-col gap-1 my-4">
@@ -34,7 +36,8 @@
 
                 <div class="avatar mx-auto flex-col gap-2 items-center">
                         <div id="upload" class="mask mask-squircle cursor-pointer hover:scale-110 transition-transform">
-                            <img id="preview" src="{{ asset('images/no-photo.png') }}" />
+                            <img id="preview" src="{{ asset('images/'. $user->photo) }}" />
+                            <input type="hidden" name="originphoto" value="{{$user->photo}}">
                         </div>
                         <small class="font-bold text-gray-500 flex items-center gap-1">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -47,38 +50,32 @@
 
                 <label class="fieldset-label">Document</label>
         <input type="number" name="document" class="input rounded-full w-full" placeholder="1002523853"
-          value="{{old('document')}}" />
+          value="{{old('document', $user->document)}}" />
 
         <label class="fieldset-label">Fullname</label>
         <input type="text" name="fullname" class="input rounded-full w-full" placeholder="Jhon Wick"
-          value="{{old('fullname')}}" />
+          value="{{old('fullname', $user->fullname)}}" />
 
         <label class="fieldset-label">Gender</label>
         <select name="gender" class="input rounded-full w-full">
           <option value="">Select Gender...</option>
-          <option value="female" @if(old('gender') == 'female') selected @endif>Female</option>
-          <option value="male" @if(old('gender') == 'male') selected @endif>Male</option>
+          <option value="female" @if(old('gender', $user->gender) == 'female') selected @endif>Female</option>
+          <option value="male" @if(old('gender',$user->gender) == 'male') selected @endif>Male</option>
         </select>
 
     <label class="fieldset-label">Birthdate</label>
-    <input type="date" name="birthdate" class="input rounded-full w-full" />
+    <input type="date" name="birthdate" class="input rounded-full w-full" 
+        value="{{old('birthdate', $user->birthdate)}}" />
 
     <label class="fieldset-label">Phone</label>
     <input type="number" name="phone" class="input rounded-full w-full" placeholder="3113200765"
-      value="{{old('phone')}}" />
+      value="{{old('phone', $user->phone)}}" />
 
     <label class="fieldset-label">Email</label>
     <input type="email" name="email" class="input rounded-full w-full" placeholder="Jhon@gmail.com"
-      value="{{old('email')}}" />
+      value="{{old('email', $user->email )}}" />
 
-      <label class="fieldset-label">Password</label>
-      <input type="password" name="password" class="input rounded-full w-full" placeholder="secret"/>
-
-      <label class="fieldset-label">Confirm Password</label>
-      <input type="password" class="input rounded-full w-full" name="password_confirmation" placeholder="secret">
-
-
-    <button class="btn bg-cyan-800 text-white rounded-full">Create</button>
+    <button class="btn bg-cyan-800 text-white rounded-full">Update</button>
     </fieldset>
     </form>
 
